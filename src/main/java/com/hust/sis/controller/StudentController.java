@@ -17,53 +17,46 @@ public class StudentController {
     
     @Autowired
     private StudentService studentService;
-    
-    // Display all students and their scores
+
     @GetMapping("/")
     public String index(Model model) {
         List<Student> students = studentService.getAllStudents();
         model.addAttribute("students", students);
         return "index";
     }
-    
-    // Show add student form
+
     @GetMapping("/add-student")
     public String showAddStudentForm(Model model) {
         model.addAttribute("student", new Student());
         return "add-student";
     }
-    
-    // Save new student
+
     @PostMapping("/save-student")
     public String saveStudent(@ModelAttribute("student") Student student) {
         studentService.saveStudent(student);
         return "redirect:/";
     }
-    
-    // Show edit student form
+
     @GetMapping("/edit-student/{id}")
     public String showEditStudentForm(@PathVariable("id") Integer id, Model model) {
         Student student = studentService.getStudentById(id);
         model.addAttribute("student", student);
         return "edit-student";
     }
-    
-    // Update student
+
     @PostMapping("/update-student/{id}")
     public String updateStudent(@PathVariable("id") Integer id, @ModelAttribute("student") Student student) {
         student.setStudentId(id);
         studentService.saveStudent(student);
         return "redirect:/";
     }
-    
-    // Delete student
+
     @GetMapping("/delete-student/{id}")
     public String deleteStudent(@PathVariable("id") Integer id) {
         studentService.deleteStudent(id);
         return "redirect:/";
     }
-    
-    // Show add score form
+
     @GetMapping("/add-score")
     public String showAddScoreForm(Model model) {
         List<Student> students = studentService.getAllStudents();
@@ -73,8 +66,7 @@ public class StudentController {
         model.addAttribute("studentScore", new StudentScore());
         return "add-score";
     }
-    
-    // Save new score
+
     @PostMapping("/save-score")
     public String saveScore(@RequestParam("studentId") Integer studentId,
                            @RequestParam("subjectId") Integer subjectId,
@@ -93,8 +85,7 @@ public class StudentController {
         studentService.saveScore(studentScore);
         return "redirect:/";
     }
-    
-    // Show edit score form
+
     @GetMapping("/edit-score/{id}")
     public String showEditScoreForm(@PathVariable("id") Integer id, Model model) {
         StudentScore score = studentService.getScoreById(id);
@@ -106,8 +97,7 @@ public class StudentController {
         model.addAttribute("subjects", subjects);
         return "edit-score";
     }
-    
-    // Update score
+
     @PostMapping("/update-score/{id}")
     public String updateScore(@PathVariable("id") Integer id,
                              @RequestParam("studentId") Integer studentId,
@@ -127,8 +117,7 @@ public class StudentController {
         studentService.saveScore(studentScore);
         return "redirect:/";
     }
-    
-    // Delete score
+
     @GetMapping("/delete-score/{id}")
     public String deleteScore(@PathVariable("id") Integer id) {
         studentService.deleteScore(id);

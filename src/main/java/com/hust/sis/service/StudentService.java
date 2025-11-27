@@ -24,8 +24,7 @@ public class StudentService {
     
     @Autowired
     private StudentScoreRepository studentScoreRepository;
-    
-    // Student operations
+
     public List<Student> getAllStudents() {
         return studentRepository.findAll();
     }
@@ -41,8 +40,7 @@ public class StudentService {
     public void deleteStudent(Integer id) {
         studentRepository.deleteById(id);
     }
-    
-    // Subject operations
+
     public List<Subject> getAllSubjects() {
         return subjectRepository.findAll();
     }
@@ -50,8 +48,7 @@ public class StudentService {
     public Subject getSubjectById(Integer id) {
         return subjectRepository.findById(id).orElse(null);
     }
-    
-    // StudentScore operations
+
     public List<StudentScore> getAllScores() {
         return studentScoreRepository.findAll();
     }

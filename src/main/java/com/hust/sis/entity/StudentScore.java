@@ -32,8 +32,7 @@ public class StudentScore {
     
     @Column(name = "score2", precision = 5, scale = 2)
     private BigDecimal score2;
-    
-    // Calculate final grade: 0.3 * score1 + 0.7 * score2
+
     @Transient
     public Double calculateGrade() {
         if (score1 == null || score2 == null) {
@@ -41,8 +40,7 @@ public class StudentScore {
         }
         return 0.3 * score1.doubleValue() + 0.7 * score2.doubleValue();
     }
-    
-    // Convert numeric grade to letter grade
+
     @Transient
     public String getLetterGrade() {
         Double grade = calculateGrade();

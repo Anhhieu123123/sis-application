@@ -3,193 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Information System</title>
+    <title>Hệ Thống Quản Lý Sinh Viên</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-    <div class="container-fluid py-4">
-        <div class="text-center mb-4">
-            <h1 class="text-primary"><i class="bi bi-mortarboard-fill"></i> Student Information System</h1>
+<div class="container-fluid py-4">
+    <div class="text-center mb-4">
+        <h1 class="text-primary"><i class="bi bi-mortarboard-fill"></i> Hệ Thống Quản Lý Sinh Viên</h1>
+    </div>
 
+    <div class="text-center mb-4">
+        <a th:href="@{/add-student}" class="btn btn-primary me-3">
+            <i class="bi bi-person-plus-fill"></i> + Thêm Sinh Viên
+        </a>
+        <a th:href="@{/add-score}" class="btn btn-success">
+            <i class="bi bi-clipboard-plus-fill"></i> + Nhập Điểm
+        </a>
+    </div>
+
+    <div th:if="${students.isEmpty()}" class="alert alert-info text-center">
+        Chưa có sinh viên nào. Hãy thêm sinh viên mới để bắt đầu.
+    </div>
+
+    <div th:if="${!students.isEmpty()}" class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="bi bi-people-fill"></i> Danh Sách Sinh Viên</h4>
         </div>
-        
-        <div class="text-center mb-4">
-            <a th:href="@{/add-student}" class="btn btn-primary me-3">
-                <i class="bi bi-person-plus-fill"></i> + Student
-            </a>
-            <a th:href="@{/add-score}" class="btn btn-success">
-                <i class="bi bi-clipboard-plus-fill"></i> + Score
-            </a>
-        </div>
-        
-        <div th:if="${students.isEmpty()}" class="alert alert-info text-center">
-            No students found. Please add a student to get started.
-        </div>
-        
-        <div th:if="${!students.isEmpty()}" class="card shadow-sm">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0"><i class="bi bi-people-fill"></i> Student List</h4>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>#</th>
-                                <th>Student Code</th>
-                                <th>Full Name</th>
-                                <th>Address</th>
-                                <th>Subject Name</th>
-                                <th>Credit</th>
-                                <th>Score 1</th>
-                                <th>Score 2</th>
-                                <th>Grade</th>
-                                <th>Letter</th>
-                                <th>Action</th>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Mã SV</th>
+                        <th>Họ và tên</th>
+                        <th>Địa chỉ</th>
+                        <th>Môn học</th>
+                        <th>Số tín chỉ</th>
+                        <th>Điểm 1</th>
+                        <th>Điểm 2</th>
+                        <th>Điểm TB</th>
+                        <th>Chữ</th>
+                        <th>Hành động</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:each="student, iterStat : ${students}">
+                        <th:block th:if="${!student.scores.isEmpty()}">
+                            <tr th:each="score, scoreIter : ${student.scores}">
+                                <td th:if="${scoreIter.index == 0}" th:rowspan="${student.scores.size()}" th:text="${iterStat.count}">1</td>
+                                <td th:if="${scoreIter.index == 0}" th:rowspan="${student.scores.size()}">
+                                    <span class="badge bg-primary" th:text="${student.studentCode}">Code</span>
+                                </td>
+                                <td th:if="${scoreIter.index == 0}" th:rowspan="${student.scores.size()}" th:text="${student.fullName}">Name</td>
+                                <td th:if="${scoreIter.index == 0}" th:rowspan="${student.scores.size()}" th:text="${student.address}">Address</td>
+                                <td th:text="${score.subject.subjectName}">Subject</td>
+                                <td class="text-center" th:text="${score.subject.credit}">4</td>
+                                <td class="text-center" th:text="${score.score1}">8.5</td>
+                                <td class="text-center" th:text="${score.score2}">7.0</td>
+                                <td class="text-center fw-bold" th:text="${#numbers.formatDecimal(score.calculateGrade(), 1, 2)}">7.45</td>
+                                <td class="text-center">
+                                            <span class="badge"
+                                                  th:classappend="${score.getLetterGrade() == 'A' ? 'bg-success' :
+                                                                   score.getLetterGrade() == 'B' ? 'bg-info' :
+                                                                   score.getLetterGrade() == 'D' ? 'bg-warning' : 'bg-danger'}"
+                                                  th:text="${score.getLetterGrade()}">A</span>
+                                </td>
+                                <td th:if="${scoreIter.index == 0}" th:rowspan="${student.scores.size()}">
+                                    <button class="btn btn-sm btn-info mb-1" data-bs-toggle="modal" th:data-bs-target="'#modal-' + ${student.studentId}">
+                                        <i class="bi bi-info-circle"></i>
+                                    </button>
+                                    <a th:href="@{/edit-student/{id}(id=${student.studentId})}" class="btn btn-sm btn-warning mb-1">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a th:href="@{/delete-student/{id}(id=${student.studentId})}" class="btn btn-sm btn-danger mb-1"
+                                       onclick="return confirm('Bạn có chắc muốn xóa sinh viên này?')">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <th:block th:each="student, iterStat : ${students}">
-                                <th:block th:if="${!student.scores.isEmpty()}">
-                                    <tr th:each="score, scoreIter : ${student.scores}">
-                                        <td th:if="${scoreIter.index == 0}" th:rowspan="${student.scores.size()}" th:text="${iterStat.count}">1</td>
-                                        <td th:if="${scoreIter.index == 0}" th:rowspan="${student.scores.size()}">
-                                            <span class="badge bg-primary" th:text="${student.studentCode}">Code</span>
-                                        </td>
-                                        <td th:if="${scoreIter.index == 0}" th:rowspan="${student.scores.size()}" th:text="${student.fullName}">Name</td>
-                                        <td th:if="${scoreIter.index == 0}" th:rowspan="${student.scores.size()}" th:text="${student.address}">Address</td>
-                                        <td th:text="${score.subject.subjectName}">Subject</td>
-                                        <td class="text-center" th:text="${score.subject.credit}">4</td>
-                                        <td class="text-center" th:text="${score.score1}">8.5</td>
-                                        <td class="text-center" th:text="${score.score2}">7.0</td>
-                                        <td class="text-center fw-bold" th:text="${#numbers.formatDecimal(score.calculateGrade(), 1, 2)}">7.45</td>
-                                        <td class="text-center">
-                                            <span class="badge" 
-                                                  th:classappend="${score.getLetterGrade() == 'A' ? 'bg-success' : 
-                                                                   score.getLetterGrade() == 'B' ? 'bg-info' : 
-                                                                   score.getLetterGrade() == 'D' ? 'bg-warning' : 'bg-danger'}"
-                                                  th:text="${score.getLetterGrade()}">A</span>
-                                        </td>
-                                        <td th:if="${scoreIter.index == 0}" th:rowspan="${student.scores.size()}">
-                                            <button class="btn btn-sm btn-info mb-1" data-bs-toggle="modal" th:data-bs-target="'#modal-' + ${student.studentId}">
-                                                <i class="bi bi-info-circle"></i>
-                                            </button>
-                                            <a th:href="@{/edit-student/{id}(id=${student.studentId})}" class="btn btn-sm btn-warning mb-1">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                            <a th:href="@{/delete-student/{id}(id=${student.studentId})}" class="btn btn-sm btn-danger mb-1" 
-                                               onclick="return confirm('Delete this student?')">
-                                                <i class="bi bi-trash"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                </th:block>
-                                <tr th:if="${student.scores.isEmpty()}">
-                                    <td th:text="${iterStat.count}">1</td>
-                                    <td><span class="badge bg-primary" th:text="${student.studentCode}">Code</span></td>
-                                    <td th:text="${student.fullName}">Name</td>
-                                    <td th:text="${student.address}">Address</td>
-                                    <td colspan="6" class="text-center text-muted">No scores yet</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-info mb-1" data-bs-toggle="modal" th:data-bs-target="'#modal-' + ${student.studentId}">
-                                            <i class="bi bi-info-circle"></i>
-                                        </button>
-                                        <a th:href="@{/edit-student/{id}(id=${student.studentId})}" class="btn btn-sm btn-warning mb-1">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <a th:href="@{/delete-student/{id}(id=${student.studentId})}" class="btn btn-sm btn-danger mb-1" 
-                                           onclick="return confirm('Delete this student?')">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            </th:block>
-                        </tbody>
-                    </table>
-                </div>
+                        </th:block>
+                        <tr th:if="${student.scores.isEmpty()}">
+                            <td th:text="${iterStat.count}">1</td>
+                            <td><span class="badge bg-primary" th:text="${student.studentCode}">Code</span></td>
+                            <td th:text="${student.fullName}">Name</td>
+                            <td th:text="${student.address}">Address</td>
+                            <td colspan="6" class="text-center text-muted">Chưa có điểm</td>
+                            <td>
+                                <button class="btn btn-sm btn-info mb-1" data-bs-toggle="modal" th:data-bs-target="'#modal-' + ${student.studentId}">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                                <a th:href="@{/edit-student/{id}(id=${student.studentId})}" class="btn btn-sm btn-warning mb-1">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a th:href="@{/delete-student/{id}(id=${student.studentId})}" class="btn btn-sm btn-danger mb-1"
+                                   onclick="return confirm('Bạn có chắc muốn xóa sinh viên này?')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </th:block>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-    
-    <!-- Modals -->
-    <div th:each="student : ${students}">
-        <div class="modal fade" th:id="'modal-' + ${student.studentId}" tabindex="-1">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title">
-                            <i class="bi bi-person-circle"></i> Student Details
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <p><strong>Student Code:</strong> <span class="badge bg-primary" th:text="${student.studentCode}">Code</span></p>
-                                <p><strong>Full Name:</strong> <span th:text="${student.fullName}">Name</span></p>
-                            </div>
-                            <div class="col-md-6">
-                                <p><strong>Address:</strong> <span th:text="${student.address}">Address</span></p>
-                                <p><strong>Total Subjects:</strong> <span class="badge bg-info" th:text="${student.scores.size()}">0</span></p>
-                            </div>
+</div>
+
+<!-- Modals -->
+<div th:each="student : ${students}">
+    <div class="modal fade" th:id="'modal-' + ${student.studentId}" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-person-circle"></i> Thông Tin Chi Tiết Sinh Viên
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>Mã Sinh Viên:</strong> <span class="badge bg-primary" th:text="${student.studentCode}">Code</span></p>
+                            <p><strong>Họ và Tên:</strong> <span th:text="${student.fullName}">Name</span></p>
                         </div>
-                        
-                        <div th:if="${!student.scores.isEmpty()}">
-                            <h6 class="border-bottom pb-2 mb-3">Academic Scores</h6>
-                            <table class="table table-bordered table-sm">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Subject</th>
-                                        <th class="text-center">Credit</th>
-                                        <th class="text-center">Score 1</th>
-                                        <th class="text-center">Score 2</th>
-                                        <th class="text-center">Grade</th>
-                                        <th class="text-center">Letter</th>
-                                        <th class="text-center">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="score : ${student.scores}">
-                                        <td th:text="${score.subject.subjectName}">Subject</td>
-                                        <td class="text-center" th:text="${score.subject.credit}">4</td>
-                                        <td class="text-center" th:text="${score.score1}">8.5</td>
-                                        <td class="text-center" th:text="${score.score2}">7.0</td>
-                                        <td class="text-center fw-bold" th:text="${#numbers.formatDecimal(score.calculateGrade(), 1, 2)}">7.45</td>
-                                        <td class="text-center">
-                                            <span class="badge" 
-                                                  th:classappend="${score.getLetterGrade() == 'A' ? 'bg-success' : 
-                                                                   score.getLetterGrade() == 'B' ? 'bg-info' : 
+                        <div class="col-md-6">
+                            <p><strong>Địa Chỉ:</strong> <span th:text="${student.address}">Address</span></p>
+                            <p><strong>Tổng Số Môn:</strong> <span class="badge bg-info" th:text="${student.scores.size()}">0</span></p>
+                        </div>
+                    </div>
+
+                    <div th:if="${!student.scores.isEmpty()}">
+                        <h6 class="border-bottom pb-2 mb-3">Điểm Học Tập</h6>
+                        <table class="table table-bordered table-sm">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Môn học</th>
+                                <th class="text-center">Tín chỉ</th>
+                                <th class="text-center">Điểm 1</th>
+                                <th class="text-center">Điểm 2</th>
+                                <th class="text-center">Điểm TB</th>
+                                <th class="text-center">Chữ</th>
+                                <th class="text-center">Hành động</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="score : ${student.scores}">
+                                <td th:text="${score.subject.subjectName}">Subject</td>
+                                <td class="text-center" th:text="${score.subject.credit}">4</td>
+                                <td class="text-center" th:text="${score.score1}">8.5</td>
+                                <td class="text-center" th:text="${score.score2}">7.0</td>
+                                <td class="text-center fw-bold" th:text="${#numbers.formatDecimal(score.calculateGrade(), 1, 2)}">7.45</td>
+                                <td class="text-center">
+                                            <span class="badge"
+                                                  th:classappend="${score.getLetterGrade() == 'A' ? 'bg-success' :
+                                                                   score.getLetterGrade() == 'B' ? 'bg-info' :
                                                                    score.getLetterGrade() == 'D' ? 'bg-warning' : 'bg-danger'}"
                                                   th:text="${score.getLetterGrade()}">A</span>
-                                        </td>
-                                        <td class="text-center">
-                                            <a th:href="@{/edit-score/{id}(id=${score.studentScoreId})}" class="btn btn-sm btn-warning">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                            <a th:href="@{/delete-score/{id}(id=${score.studentScoreId})}" class="btn btn-sm btn-danger" 
-                                               onclick="return confirm('Delete this score?')">
-                                                <i class="bi bi-trash"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div class="alert alert-light mb-0">
-                                <small><strong>Formula:</strong> Grade = 0.3 × Score 1 + 0.7 × Score 2</small>
-                            </div>
+                                </td>
+                                <td class="text-center">
+                                    <a th:href="@{/edit-score/{id}(id=${score.studentScoreId})}" class="btn btn-sm btn-warning">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a th:href="@{/delete-score/{id}(id=${score.studentScoreId})}" class="btn btn-sm btn-danger"
+                                       onclick="return confirm('Bạn có chắc muốn xóa điểm này?')">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="alert alert-light mb-0">
+                            <small><strong>Công thức tính:</strong> Điểm TB = 0.3 × Điểm 1 + 0.7 × Điểm 2</small>
                         </div>
-                        
-                        <div th:if="${student.scores.isEmpty()}" class="alert alert-warning">
-                            No scores recorded for this student.
-                        </div>
+                    </div>
+
+                    <div th:if="${student.scores.isEmpty()}" class="alert alert-warning">
+                        Chưa có điểm cho sinh viên này.
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
