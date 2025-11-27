@@ -1,0 +1,25 @@
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+.container-fluid {
+    background: white;
+    border-radius: 10px;
+    margin: 20px auto;
+    max-width: 1400px;
+}
+
+.card {
+    border: none;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(102, 126, 234, 0.1);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+
